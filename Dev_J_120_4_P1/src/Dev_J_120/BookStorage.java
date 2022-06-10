@@ -21,7 +21,7 @@ public class BookStorage {
     {
         if(internalBookCodeSet.contains(internalBookCode))
             throw new IllegalArgumentException
-                      ("Книга с таким внутренним номером уже зарегистрирована.");
+                      ("A book with this account number has already been registered.");
         bookList.add(new BookInfo(internalBookCode, ISBN, bookName, 
                          authors, yearOfPublication));
         internalBookCodeSet.add(internalBookCode);

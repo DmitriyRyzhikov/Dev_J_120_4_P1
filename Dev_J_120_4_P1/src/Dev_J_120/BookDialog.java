@@ -3,6 +3,7 @@ package Dev_J_120;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
@@ -13,30 +14,29 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.text.MaskFormatter;
 
 public class BookDialog extends JDialog{
     private final JTextField internalBookCodeField;
-    private final JFormattedTextField ISBNField;
+    private final JTextField ISBNField;
     private final JTextField bookNameField;
     private final JTextField authorsField;
-    private final JFormattedTextField yearOfPublicationField;
+    private final JTextField yearOfPublicationField;
     private boolean okPressed;
     
     public BookDialog(JFrame owner) {
 	super(owner, true);
 		
         internalBookCodeField = new JTextField();
-        ISBNField = new JFormattedTextField();
+        ISBNField = new JTextField();
 	bookNameField = new JTextField();
 	authorsField = new JTextField();
-	yearOfPublicationField = new JFormattedTextField();
+	yearOfPublicationField = new JTextField();
 		
 	initLayout();
 		
@@ -50,7 +50,7 @@ public class BookDialog extends JDialog{
        
     	JPanel controlsPane = new JPanel(null);
 	controlsPane.setLayout(new BoxLayout(controlsPane, BoxLayout.Y_AXIS));
-        controlsPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10)); 
+        controlsPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 	
 	JPanel p1 = new JPanel(); 
         createPanelProperties(p1);
@@ -72,7 +72,7 @@ public class BookDialog extends JDialog{
         p2.add(lb2);
         p2.add(Box.createRigidArea(new Dimension(5,20)));
 	p2.add(ISBNField);
-        p2.add(Box.createRigidArea(new Dimension(400,20)));
+        p2.add(Box.createRigidArea(new Dimension(380,20)));
 	controlsPane.add(p2);
 		
         JPanel p3 = new JPanel(); 
@@ -198,20 +198,21 @@ public class BookDialog extends JDialog{
 Возвращает год публикации, введенный пользователем.
 */
     public Integer getYearOfPublication() {
-	return Integer.valueOf(yearOfPublicationField.getText());
+        Integer year = 0;
+      try {  
+           year = Integer.valueOf(yearOfPublicationField.getText());
+          }
+      catch(NumberFormatException ne) {
+           JOptionPane.showMessageDialog(MainFrame.findLatestWindow(), 
+                    "Numbers required.",
+                    "Error entering the year of publication.",
+			JOptionPane.ERROR_MESSAGE);
+      }
+	return year;
     }
+    
     public void createPanelProperties(JComponent p){
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
         p.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); 
     }
-    protected MaskFormatter createFormatter(String s) {
-    MaskFormatter formatter = null;
-    try {
-        formatter = new MaskFormatter(s);
-    } catch (java.text.ParseException exc) {
-        System.err.println("formatter is bad: " + exc.getMessage());
-        System.exit(-1);
-    }
-    return formatter;
-}
 }
