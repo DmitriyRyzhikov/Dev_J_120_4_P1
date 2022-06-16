@@ -11,46 +11,55 @@ public class BookInfo {
     private Integer yearOfPublication;
 
     public BookInfo(String internalBookCode, String ISBN, String bookName, 
-                    String authors, int yearOfPublication) {
+                    String authors, Integer yearOfPublication) throws IllegalArgumentException{
         if(internalBookCode != null && !internalBookCode.trim().isEmpty())
            this.internalBookCode = internalBookCode;
         else
-            throw new IllegalArgumentException
-                     ("Поле \"Внутрибиблиотечный код книги\" должно быть заполнено."); 
+            throw new IllegalArgumentException(); 
         setISBN(ISBN); 
         setBookName(bookName); 
         setAuthors(authors); 
         setYearOfPublication(yearOfPublication); 
     }
+/*
+ ISBN - довольно сложная для контроля (с точки зрения IllegalArgumentException)штука. Если 
+книга издана до 1970 г. (в России до 1987 г), она вообще не имеет этот номер и позиция ISBN 
+в учетных документах библиотек остается пустой. Если ISBN присутсвует, то состоит он только 
+из цифр и обязательных разделителей. Цифр может быть либо 10 (старый формат), либо 13(новый формат) 
++ 4 разделителя (обычно пробел или дефис). Таким образом, количество символов в строке ISBN 
+должно быть от 14 до 17, либо 0. Наконец, проблему усугубляет то, что разделители не имеют 
+стационарной позиции в номере, что делает невозможным использование форматированной маски 
+в поле для ввода номера.    
+    */    
+    
     public final void setISBN(String ISBN) {
-        if(ISBN != null && !ISBN.trim().isEmpty() && 
-             (ISBN.trim().length()>=10 && ISBN.trim().length()<=18)) {
+        if(ISBN != null && (ISBN.equals("") || (ISBN.trim().length()>=14 && ISBN.trim().length()<=17))) {
+           char[] num = ISBN.trim().toCharArray();
+           for(char ch : num) {
+               if(Character.isLetter(ch))
+                  throw new IllegalArgumentException(); }
            this.ISBN = ISBN.trim();  }  
         else
-            throw new IllegalArgumentException
-                     ("Не введен номер ISBN или введенный номер не соответствует стандарту."); 
+            throw new IllegalArgumentException(); 
     }
     public final void setBookName(String bookName) {
         if(bookName != null && !bookName.trim().isEmpty())
            this.bookName = bookName.trim();
         else
-           throw new IllegalArgumentException
-                     ("Поле \"Название книги\" должно быть заполнено."); 
+           throw new IllegalArgumentException(); 
     }
     public final void setAuthors(String authors) {
         if(authors != null)
            this.authors = authors;
         else
-            throw new IllegalArgumentException 
-                      ("Поле \"Авторы\" не может быть Null.");  
+            throw new IllegalArgumentException ();  
     }
-    public final void setYearOfPublication(int yearOfPublication) {
+    public final void setYearOfPublication(Integer yearOfPublication) {
         if(yearOfPublication > 1475 && 
            yearOfPublication <= LocalDate.now().getYear()) 
            this.yearOfPublication = yearOfPublication;
         else
-           throw new IllegalArgumentException
-                     ("Поле \"Год издания\" не заполнен или заполнен некорректно.");  
+           throw new IllegalArgumentException();  
     }
 
     public String getInternalBookCode() {

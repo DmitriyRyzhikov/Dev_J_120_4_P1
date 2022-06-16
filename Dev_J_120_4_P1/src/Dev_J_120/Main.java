@@ -2,11 +2,9 @@ package Dev_J_120;
 
 public class Main {
 
-
     public static void main(String[] args) {
  
-	new MainFrame().setVisible(true);
-       
+	new MainFrame().setVisible(true);       
     }
 }
     

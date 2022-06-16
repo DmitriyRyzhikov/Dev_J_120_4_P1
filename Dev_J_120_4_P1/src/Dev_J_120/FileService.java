@@ -35,7 +35,6 @@ public class FileService {
         Path path = Paths.get(URL); 
         if(!path.isAbsolute())
             path = path.toAbsolutePath();
-        //Path dir = path.getParent();
         if(!Files.exists(path))
             throw new IOException
             ("The source data file was not found. The book database is empty.");

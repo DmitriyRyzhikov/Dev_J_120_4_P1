@@ -2,6 +2,9 @@
 package Dev_J_120;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
@@ -31,7 +34,7 @@ public class MainFrame extends JFrame{
 		
 	initMenu();
 	initLayout();	
-	setBounds(150, 100, 700, 500);
+	setBounds(100, 200, 800, 500);
         startApp();
         closeApp();
     }
@@ -66,9 +69,18 @@ public class MainFrame extends JFrame{
     private void initLayout() {
 	booksTable.setModel(bookTableModel);
 	booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+        booksTable.setFont(new Font("Times new roman", 0, 16));
+        booksTable.setIntercellSpacing(new Dimension(5, 5));
+        booksTable.setRowHeight(27);
+        BookStorageTableModel.alignCenter(booksTable, 0);
+        BookStorageTableModel.alignCenter(booksTable, 1);
+        BookStorageTableModel.alignCenter(booksTable, 4);
+        BookStorageTableModel.setJTableColumnsWidth
+                                  (booksTable, 800, 31, 38, 60, 60, 31); 
 	add(booksTable.getTableHeader(), BorderLayout.NORTH);
-	add(new JScrollPane(booksTable), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(booksTable);
+        scrollPane.setPreferredSize(new Dimension(800, 500));
+	add(scrollPane, BorderLayout.CENTER);
     }
     private void addBook() {
 	bookDialog.prepareForAdd();
@@ -91,11 +103,16 @@ public class MainFrame extends JFrame{
 	BookInfo bi = bookTableModel.getBook(seldRow); 
 	bookDialog.prepareForChange(bi);
 	if(bookDialog.showModal()) {
+           try { 
 	    bi.setISBN(bookDialog.getISBN());	
             bi.setBookName(bookDialog.getBookName());
             bi.setAuthors(bookDialog.getAuthors());
             bi.setYearOfPublication(bookDialog.getYearOfPublication());
-            bookTableModel.bookChanged(seldRow);
+            bookTableModel.bookChanged(seldRow); }
+           catch(IllegalArgumentException ie) {
+                JOptionPane.showMessageDialog(this, "The data was edited incorrectly.", "Error changing book data",
+			JOptionPane.ERROR_MESSAGE);
+           }
 	}
     }
     private void delBook() {
@@ -126,8 +143,8 @@ public class MainFrame extends JFrame{
                     try { 
                         fs.saveBooksToFile(list);
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(new MainFrame(), 
-                                "An error occurred while writing the file.", "Error. The application will be stopped.",
+                        JOptionPane.showMessageDialog(findLatestWindow(), 
+                                "An error occurred while writing the file. Table Data may be lost.", "Error. The application will be stopped.",
 			JOptionPane.ERROR_MESSAGE);
                     }
                     e.getWindow().setVisible(false);
@@ -146,7 +163,7 @@ public class MainFrame extends JFrame{
                 try {
                     sourceList = fs.extractBooksFromFile();
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(new MainFrame(), 
+                    JOptionPane.showMessageDialog(findLatestWindow(), 
                     "The data source file is missing or reading from it is impossible.",
                     "Error. An error occurred while reading the file.",
 			JOptionPane.ERROR_MESSAGE);
@@ -157,6 +174,16 @@ public class MainFrame extends JFrame{
             });
         }
     });
-}
+  }
+    // метод ищет последнее открывшееся окно. Нужно для правильного позиционирования JOptionPane.  
+        static Window findLatestWindow() {
+        Window result = null;
+        for (Window w : Window.getWindows()) {
+            if (w.isVisible()) {
+                result = w;
+            }
+        }
+        return result;
+    }
 }
 
